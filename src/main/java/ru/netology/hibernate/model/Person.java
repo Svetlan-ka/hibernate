@@ -13,19 +13,19 @@ import lombok.Setter;
 
 @Entity
 @Table(name = "persons")
+@IdClass(PersonId.class)
 public class Person {
     @Id
-    @GeneratedValue
-    @Column(name = "id", nullable = false)
-    private int id;
     @Column(name = "first_name", nullable = false)
     private String firstName;
+    @Id
     @Column(name = "last_name", nullable = false)
     private String lastName;
+    @Id
     @Column(name = "age", nullable = false)
     private int age;
     @Column(name = "phone_number", nullable = false)
     private String phoneNumber;
     @Column(name = "city_of_living", nullable = false)
-    private String cityOfLiving;
+    private String city;
 }
