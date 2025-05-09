@@ -24,13 +24,14 @@ public class Controller {
         return service.getPersonById(id);
     }
 
-    @GetMapping("/update/{id}")
+    @PutMapping("/update/{id}")
     public Person updatePerson(@PathVariable Long id, @RequestBody Person updatedPerson) {
         return service.updatePerson(id, updatedPerson);
     }
-    @GetMapping("/delete/{id}")
+    @DeleteMapping("/delete/{id}")
     public void deletePerson(@PathVariable Long id) {
         service.deletePersonById(id);
+        System.out.println("Person with ID " + id + " deleted.");
     }
 
     @GetMapping("/search-by-city")
