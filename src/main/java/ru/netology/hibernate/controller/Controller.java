@@ -1,55 +1,40 @@
 package ru.netology.hibernate.controller;
 
+import jakarta.annotation.security.RolesAllowed;
 import lombok.AllArgsConstructor;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
-import ru.netology.hibernate.model.Person;
-import ru.netology.hibernate.service.PersonService;
-
-import java.util.List;
-import java.util.Optional;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping("/persons")
 public class Controller {
-    private final PersonService service;
 
-    @PostMapping("/create")
-    public Person createPerson(@RequestBody Person person) {
-        return service.createPerson(person);
+    @GetMapping("/read")
+    @Secured("ROLE_READ")
+    public String read() {
+        return "Только для пользователей с ролью [READ]!";
     }
 
-    @GetMapping("/{id}")
-    public Person getPersonById(@PathVariable Long id) {
-        return service.getPersonById(id);
+    @GetMapping("/write")
+    @RolesAllowed("ROLE_WRITE")
+    public String write() {
+        return "Только для пользователей с ролью [WRITE]!";
     }
 
-    @PutMapping("/update/{id}")
-    public Person updatePerson(@PathVariable Long id, @RequestBody Person updatedPerson) {
-        return service.updatePerson(id, updatedPerson);
-    }
-    @DeleteMapping("/delete/{id}")
-    public void deletePerson(@PathVariable Long id) {
-        service.deletePersonById(id);
-        System.out.println("Person with ID " + id + " deleted.");
+    @GetMapping("/write-and-delete")
+    @PreAuthorize("hasAnyRole('WRITE', 'DELETE')")
+    public String readAndWrite() {
+        return "Для пользователей с ролями [WRITE] и [DELETE]!";
     }
 
-    @GetMapping("/search-by-city")
-    public List<Person> getPersonsByCity(@RequestParam String city) {
-        return service.getPersonsByCity(city);
+    @GetMapping("/equals")
+    public String equalsUsername(@RequestParam String username) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth.isAuthenticated() && auth.getName().equals(username))
+            return "Имя " + username + " совпадает с текущим пользователем!";
+        return "Указанное имя НЕ СОВПАДАЕТ с текущим пользователем, уходите!";
     }
-
-    @GetMapping("/search-by-age")
-    public List<Person> getPersonsByAgeLessThanOrderByAge(@RequestParam int age) {
-        return service.getPersonsByAgeLessThanOrderByAge(age);
-    }
-
-    @GetMapping("/search-by-lastname-and-firstname")
-    public Optional<Person> getPersonsByFirstNameAndLastName(@RequestParam String firstName, @RequestParam String lastName) {
-        return service.getPersonsByFirstNameAndLastName(firstName, lastName);
-    }
-
-
-
-
 }
